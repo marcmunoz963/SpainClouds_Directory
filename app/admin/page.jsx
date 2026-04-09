@@ -1,83 +1,146 @@
-import startups from "@/data/startups.json";
+import { requireAdmin } from "@/lib/auth";
+import Link from "next/link";
+import { getAllStartupsForAdmin, getProposals } from "@/lib/startups";
+import { logoutAction } from "@/app/login/actions";
+import {
+  deleteProposalAction,
+  movePriorityAction,
+  publishProposalAction,
+  toggleFeaturedAction,
+  toggleSponsoredAction,
+} from "@/app/admin/actions";
 
-const propuestasDemo = [
-  {
-    nombre: "Ejemplo Startup",
-    sector_normalizado: "—",
-    sector_propuesto_libre: "observabilidad industrial",
-    ubicacion: "Cataluña",
-    estado: "Pendiente de revisión",
-  },
-  {
-    nombre: "Demo Networks",
-    sector_normalizado: "networking",
-    sector_propuesto_libre: "—",
-    ubicacion: "Comunidad de Madrid",
-    estado: "Lista para publicar",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const admin = await requireAdmin();
+  const startups = await getAllStartupsForAdmin();
+  const proposals = await getProposals();
+
   return (
     <main className="container section">
+      <div className="adminGridTop">
+        <div className="adminCard">
+          <span className="eyebrow">Backoffice</span>
+          <h1 className="adminTitle">Panel de gestión</h1>
+          <div className="smallMuted">Sesión: {admin.email}</div>
+          <p className="smallMuted">
+            Aquí llegan las propuestas nuevas. Desde este panel puedes revisarlas, publicarlas en el directorio,
+            editar las fichas existentes, destacar listings y cambiar su prioridad.
+          </p>
+          <form action={logoutAction} className="actions" style={{ marginTop: 14 }}>
+            <button className="buttonGhost" type="submit">Cerrar sesión</button>
+          </form>
+        </div>
+        <div className="adminCard statsCard">
+          <div className="statLine"><strong>{startups.length}</strong><span>startups en base de datos</span></div>
+          <div className="statLine"><strong>{startups.filter((item) => item.isFeatured).length}</strong><span>destacadas</span></div>
+          <div className="statLine"><strong>{startups.filter((item) => item.isSponsored).length}</strong><span>patrocinadas</span></div>
+          <div className="statLine"><strong>{proposals.length}</strong><span>propuestas pendientes</span></div>
+        </div>
+      </div>
+
       <div className="adminCard">
         <div className="sectionTitle">
-          <h2>Panel de gestión</h2>
+          <div>
+            <span className="eyebrow">Propuestas</span>
+            <h2 className="sectionHeading">Bandeja de revisión</h2>
+          </div>
         </div>
-        <p className="smallMuted">
-          Esta maqueta separa el sector normalizado del sector libre propuesto para evitar duplicados y mantener limpios los filtros públicos.
+        <p className="smallMuted adminHint">
+          Flujo actual: la propuesta entra aquí, se revisa, y con “Publicar” se crea una nueva startup en el directorio.
+          Después ya se puede terminar de ajustar desde la pantalla de edición.
         </p>
 
-        <h3 style={{ marginTop: 28 }}>Propuestas recibidas</h3>
-        <table className="adminTable">
-          <thead>
-            <tr>
-              <th>Startup</th>
-              <th>Sector normalizado</th>
-              <th>Sector propuesto libre</th>
-              <th>Ubicación</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {propuestasDemo.map((item) => (
-              <tr key={`${item.nombre}-${item.ubicacion}`}>
-                <td><strong>{item.nombre}</strong></td>
-                <td>{item.sector_normalizado}</td>
-                <td>{item.sector_propuesto_libre}</td>
-                <td>{item.ubicacion}</td>
-                <td>{item.estado}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <h3 style={{ marginTop: 32 }}>Directorio publicado</h3>
         <table className="adminTable">
           <thead>
             <tr>
               <th>Startup</th>
               <th>Sector</th>
               <th>Ubicación</th>
-              <th>Web</th>
+              <th>Contacto</th>
               <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            {startups.map((startup) => (
-              <tr key={startup.slug}>
+            {proposals.map((proposal) => (
+              <tr key={proposal.id}>
                 <td>
-                  <strong>{startup.nombre_empresa}</strong>
-                  <br />
-                  <span className="muted">{startup.descripcion_corta || "Sin descripción breve"}</span>
+                  <strong>{proposal.nombreStartup}</strong>
+                  <div className="muted">{proposal.descripcionCorta || "Sin descripción"}</div>
                 </td>
-                <td>{startup.sector_principal || "—"}</td>
-                <td>{startup.ciudad || startup.comunidad_autonoma || "—"}</td>
-                <td>{startup.web ? "Disponible" : "No disponible"}</td>
+                <td>{proposal.sectorPrincipal || proposal.sectorPropuestoLibre || "—"}</td>
+                <td>{proposal.comunidadAutonoma || "—"}</td>
+                <td>{proposal.nombreContacto || proposal.emailContacto || "—"}</td>
                 <td>
                   <div className="actions">
-                    <button type="button" className="buttonGhost">Editar</button>
-                    <button type="button" className="buttonGhost">Publicar</button>
+                    <form action={publishProposalAction}>
+                      <input type="hidden" name="id" value={proposal.id} />
+                      <button className="button" type="submit">Publicar</button>
+                    </form>
+                    <form action={deleteProposalAction}>
+                      <input type="hidden" name="id" value={proposal.id} />
+                      <button className="buttonGhost" type="submit">Descartar</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="adminCard">
+        <div className="sectionTitle">
+          <div>
+            <span className="eyebrow">Listings</span>
+            <h2 className="sectionHeading">Directorio publicado</h2>
+          </div>
+        </div>
+        <table className="adminTable">
+          <thead>
+            <tr>
+              <th>Startup</th>
+              <th>Ubicación</th>
+              <th>Estado comercial</th>
+              <th>Prioridad</th>
+              <th>Clicks</th>
+              <th>Gestión</th>
+            </tr>
+          </thead>
+          <tbody>
+            {startups.map((startup) => (
+              <tr key={startup.id}>
+                <td>
+                  <strong>{startup.nombreEmpresa}</strong>
+                  <div className="muted">{startup.descripcionCorta || "Sin descripción breve"}</div>
+                </td>
+                <td>{startup.ciudad || startup.comunidadAutonoma || "—"}</td>
+                <td>
+                  <div className="chipWrap">
+                    {startup.isFeatured ? <span className="chip">Destacado</span> : null}
+                    {startup.isSponsored ? <span className="chip chipAccent">{startup.sponsoredLabel || "Patrocinado"}</span> : null}
+                    {!startup.isPublished ? <span className="chip">Oculto</span> : null}
+                  </div>
+                </td>
+                <td>{startup.priorityScore}</td>
+                <td>{startup.clickCount}</td>
+                <td>
+                  <div className="actions">
+                    <Link href={`/admin/startups/${startup.slug}`} className="buttonGhost">Editar</Link>
+                    <form action={toggleFeaturedAction}>
+                      <input type="hidden" name="id" value={startup.id} />
+                      <button className="buttonGhost" type="submit">{startup.isFeatured ? "Quitar destacado" : "Destacar"}</button>
+                    </form>
+                    <form action={toggleSponsoredAction}>
+                      <input type="hidden" name="id" value={startup.id} />
+                      <button className="buttonGhost" type="submit">{startup.isSponsored ? "Quitar sponsor" : "Patrocinar"}</button>
+                    </form>
+                    <form action={movePriorityAction}>
+                      <input type="hidden" name="id" value={startup.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button className="buttonGhost" type="submit">Subir</button>
+                    </form>
                   </div>
                 </td>
               </tr>

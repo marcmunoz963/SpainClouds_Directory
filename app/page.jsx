@@ -1,36 +1,50 @@
 import DirectoryClient from "@/components/DirectoryClient";
-import startups from "@/data/startups.json";
+import { buildFacets, getPublishedStartups } from "@/lib/startups";
 
-export default function HomePage() {
-  const sectores = new Set(startups.map((item) => item.sector_principal).filter(Boolean)).size;
-  const comunidades = new Set(startups.map((item) => item.comunidad_autonoma).filter(Boolean)).size;
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const startups = await getPublishedStartups();
+  const facets = buildFacets(startups);
 
   return (
     <main>
       <section className="hero">
         <div className="container heroGrid">
           <div className="heroCard">
-                        <h1>El directorio de startups cloud, telco y networking en España.</h1>
+            <span className="eyebrow">Directorio</span>
+            <h1>Startups cloud, telco, networking y ciberseguridad en España.</h1>
             <p>
-              Descubre startups españolas con información objetiva, fichas individuales
-              y una navegación pensada para explorar el ecosistema por sector, ubicación y especialización.
+              Explora el ecosistema con filtros avanzados, fichas individuales y una capa de gestión preparada
+              para editar contenidos, destacar listings y activar campañas comerciales.
             </p>
             <div className="kpis">
-              <div className="kpi"><strong>{startups.length}</strong><span>startups incluidas</span></div>
-              <div className="kpi"><strong>{sectores}</strong><span>sectores distintos</span></div>
-              <div className="kpi"><strong>{comunidades}</strong><span>comunidades autónomas</span></div>
+              <div className="kpi"><strong>{startups.length}</strong><span>startups publicadas</span></div>
+              <div className="kpi"><strong>{facets.sectors.length}</strong><span>sectores</span></div>
+              <div className="kpi"><strong>{facets.communities.length}</strong><span>comunidades</span></div>
             </div>
           </div>
-          <div className="heroSide heroCard">
-            <div><span className="badge">Qué incluye</span></div>
-            <div className="smallMuted"><strong>Directorio público</strong><br />Buscador, filtros y tarjetas con datos objetivos.</div>
-            <div className="smallMuted"><strong>Fichas individuales</strong><br />Página propia por startup con información ampliada.</div>
-            <div className="smallMuted"><strong>Directorio escalable</strong><br />Una estructura preparada para crecer y seguir incorporando nuevas startups.</div>
+          <div className="heroCard heroSide">
+            <div className="featureBlurb">
+              <strong>Filtros tipo landscape</strong>
+              <span>Sector, comunidad, especialización, búsqueda libre y estado comercial.</span>
+            </div>
+            <div className="featureBlurb">
+              <strong>Feature listings</strong>
+              <span>Destacados, patrocinados, prioridad editorial y CTA de referral.</span>
+            </div>
+            <div className="featureBlurb">
+              <strong>Gestión rápida</strong>
+              <span>Backoffice con edición de fichas, propuestas y control de orden.</span>
+            </div>
           </div>
         </div>
       </section>
+
       <section className="section">
-        <div className="container"><DirectoryClient startups={startups} /></div>
+        <div className="container">
+          <DirectoryClient startups={startups} facets={facets} />
+        </div>
       </section>
     </main>
   );

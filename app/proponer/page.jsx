@@ -1,17 +1,19 @@
 import ProposalForm from "@/components/ProposalForm";
+import { createProposalAction } from "@/app/admin/actions";
 
-export default function ProponerPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProponerPage({ searchParams }) {
+  const params = await searchParams;
+  const ok = params?.ok === "1";
+
   return (
     <main className="container section">
       <div className="formCard">
-        <div className="sectionTitle">
-          <h2>Proponer una startup</h2>
-        </div>
-        <p className="smallMuted">
-          Puedes elegir uno de los sectores existentes o seleccionar “Otro” para enviar una propuesta con un sector libre.
-          Ese valor queda pendiente de revisión editorial antes de incorporarse al directorio público.
-        </p>
-        <ProposalForm />
+        <div className="sectionTitle"><div><span className="eyebrow">Alta de propuestas</span><h1 className="adminTitle">Proponer una startup</h1></div></div>
+        <p className="smallMuted">Las propuestas se guardan en la base de datos para revisión editorial. Si el sector no encaja, puedes usar “Otro” y completar el campo libre.</p>
+        {ok ? <div className="successBox">Propuesta enviada correctamente.</div> : null}
+        <ProposalForm action={createProposalAction} />
       </div>
     </main>
   );

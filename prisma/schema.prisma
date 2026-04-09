@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Startup {
+  id                        Int      @id @default(autoincrement())
+  slug                      String   @unique
+  nombreEmpresa             String
+  web                       String?
+  linkedinEmpresa           String?
+  descripcionCorta          String?
+  descripcionLarga          String?
+  anoFundacion              String?
+  estadoEmpresa             String?
+  pais                      String?
+  comunidadAutonoma         String?
+  provincia                 String?
+  ciudad                    String?
+  alcanceGeografico         String?
+  sectorPrincipal           String?
+  subsectores               String?
+  verticalTecnologica       String?
+  modeloNegocio             String?
+  faseStartup               String?
+  empleadosEstimados        String?
+  rangoEmpleados            String?
+  financiacionTotalEstimada String?
+  ultimaRonda               String?
+  fechaUltimaRonda          String?
+  inversoresDestacados      String?
+  clientesDestacados        String?
+  sociosDestacados          String?
+  fundadores                String?
+  nombreCeo                 String?
+  nombreCto                 String?
+  tipoTelco                 String?
+  focoTelco                 String?
+  tipoNetworking            String?
+  capaNetworking            String?
+  tipoCloud                 String?
+  cloudsSoportadas          String?
+  tecnologiasClave          String?
+  logo                      String?
+  isPublished               Boolean  @default(true)
+  isFeatured                Boolean  @default(false)
+  featuredRank              Int      @default(0)
+  isSponsored               Boolean  @default(false)
+  priorityScore             Int      @default(0)
+  sponsoredLabel            String?
+  referralUrl               String?
+  ctaLabel                  String?
+  notesInternal             String?
+  clickCount                Int      @default(0)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model Proposal {
+  id                   Int      @id @default(autoincrement())
+  nombreStartup        String
+  web                  String?
+  sectorPrincipal      String?
+  sectorPropuestoLibre String?
+  comunidadAutonoma    String?
+  descripcionCorta     String?
+  nombreContacto       String?
+  emailContacto        String?
+  comentarios          String?
+  estado               String   @default("Pendiente de revisión")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+
+model AdminUser {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  passwordHash     String
+  name             String?
+  sessionToken     String?   @unique
+  sessionExpiresAt DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}

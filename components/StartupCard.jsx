@@ -5,38 +5,12 @@ export default function StartupCard({ startup }) {
   return (
     <article className="startupCard">
       <div className="startupHeader">
-        <div className="logoWrap">
-          <Image
-            src={startup.logo}
-            alt={`Logo de ${startup.nombre_empresa}`}
-            width={56}
-            height={56}
-          />
-        </div>
-        <div>
-          <h3>{startup.nombre_empresa}</h3>
-          <div className="muted">
-            {startup.sector_principal || "Sin sector"} · {startup.ciudad || startup.comunidad_autonoma || "España"}
-          </div>
-        </div>
+        <div className="logoWrap"><Image src={startup.logo || "/logos/alias-robotics.svg"} alt={`Logo de ${startup.nombreEmpresa}`} width={56} height={56} /></div>
+        <div className="titleBlock"><div className="chipWrap">{startup.isSponsored ? <span className="chip chipAccent">{startup.sponsoredLabel || "Featured listing"}</span> : null}{startup.isFeatured ? <span className="chip">Destacado</span> : null}</div><h3>{startup.nombreEmpresa}</h3><div className="muted">{startup.sectorPrincipal || "Sin sector"} · {startup.ciudad || startup.comunidadAutonoma || "España"}</div></div>
       </div>
-
-      <p className="smallMuted">{startup.descripcion_corta || "Sin descripción breve."}</p>
-
-      <div className="actions">
-        <Link href={`/startup/${startup.slug}`} className="button">
-          Ver ficha
-        </Link>
-        {startup.web ? (
-          <a className="buttonGhost" href={startup.web} target="_blank" rel="noreferrer">
-            Web
-          </a>
-        ) : (
-          <span className="buttonGhost buttonDisabled" aria-disabled="true" title="Web no disponible">
-            Web no disponible
-          </span>
-        )}
-      </div>
+      <p className="smallMuted">{startup.descripcionCorta || "Sin descripción breve."}</p>
+      <div className="cardMeta">{(startup.specializations || []).slice(0, 3).map((item) => <span className="miniChip" key={item}>{item}</span>)}</div>
+      <div className="actions"><Link href={`/startup/${startup.slug}`} className="button">Ver ficha</Link><a className="buttonGhost" href={`/r/${startup.slug}`}>{startup.referralUrl ? (startup.ctaLabel || "Referral") : "Web"}</a></div>
     </article>
   );
 }
