@@ -334,44 +334,40 @@ export default function DirectoryClient({ startups: baseStartups }) {
 
             {totalPages > 1 ? (
               <div className="pagination">
-                <div className="paginationSide">
-                  {currentPage > 1 ? (
-                    <button
-                      className="buttonGhost"
-                      type="button"
-                      onClick={() =>
-                        setCurrentPage((page) => Math.max(page - 1, 1))
-                      }
-                    >
-                      Anterior
-                    </button>
-                  ) : (
-                    <span />
-                  )}
-                </div>
+                {currentPage > 1 ? (
+                  <button
+                    className="buttonGhost"
+                    type="button"
+                    onClick={() =>
+                      setCurrentPage((page) => Math.max(page - 1, 1))
+                    }
+                  >
+                    Anterior
+                  </button>
+                ) : (
+                  <div />
+                )}
 
-                <div className="smallMuted">
+                <div className="smallMuted paginationInfo">
                   Mostrando {startIndex + 1}-{Math.min(endIndex, filtered.length)} de{" "}
                   {filtered.length}
                 </div>
 
-                <div className="paginationSide paginationSideRight">
-                  {currentPage < totalPages ? (
-                    <button
-                      className="button"
-                      type="button"
-                      onClick={() =>
-                        setCurrentPage((page) =>
-                          Math.min(page + 1, totalPages)
-                        )
-                      }
-                    >
-                      Siguiente
-                    </button>
-                  ) : (
-                    <span />
-                  )}
-                </div>
+                {currentPage < totalPages ? (
+                  <button
+                    className="button"
+                    type="button"
+                    onClick={() =>
+                      setCurrentPage((page) =>
+                        Math.min(page + 1, totalPages)
+                      )
+                    }
+                  >
+                    Siguiente
+                  </button>
+                ) : (
+                  <div />
+                )}
               </div>
             ) : null}
           </>
