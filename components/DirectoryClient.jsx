@@ -344,9 +344,7 @@ export default function DirectoryClient({ startups: baseStartups }) {
                   >
                     Anterior
                   </button>
-                ) : (
-                  <div />
-                )}
+                ) : null}
 
                 <div className="smallMuted paginationInfo">
                   Mostrando {startIndex + 1}-{Math.min(endIndex, filtered.length)} de{" "}
@@ -365,9 +363,7 @@ export default function DirectoryClient({ startups: baseStartups }) {
                   >
                     Siguiente
                   </button>
-                ) : (
-                  <div />
-                )}
+                ) : null}
               </div>
             ) : null}
           </>

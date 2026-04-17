@@ -630,14 +630,16 @@ code {
 }
 
 .pagination {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-top: 22px;
+  flex-wrap: wrap;
 }
 
 .paginationInfo {
+  flex: 1 1 220px;
   text-align: center;
 }
 
@@ -671,7 +673,11 @@ code {
   }
 
   .pagination {
-    grid-template-columns: 1fr;
-    text-align: center;
+    justify-content: center;
+  }
+
+  .paginationInfo {
+    flex: 1 1 100%;
+    order: -1;
   }
 }
