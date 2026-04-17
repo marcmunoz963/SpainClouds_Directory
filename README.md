@@ -1,45 +1,24 @@
-# SpainClouds Directory · Versión pública v3
+# SpainClouds Directory
 
-Esta carpeta contiene una revisión del directorio web pensada ya para publicación pública:
+Mejoras incluidas en esta iteración:
 
-- 150 startups cargadas desde la hoja `Startups`
-- Home con buscador y filtros
-- Página individual por startup
-- Formulario "Proponer una startup"
-- Backoffice editorial de demo
-- Enfoque de información pública y objetiva
+- filtros laterales con contadores dinámicos
+- página de contacto
+- página para reclamar una empresa o preguntar por promoción
+- área de empresas con creación de cuentas en local (demo)
+- propuestas guardadas localmente y visibles en `/admin`
+- posibilidad de publicar propuestas desde `/admin`
+- opción de eliminar startups desde `/admin`
+- edición manual y reset de clicks de referral desde `/admin`
+- ficha pública sin bloque de clicks de referral
+- etiquetas y especializaciones mostradas en Title Case
 
-## Cómo arrancarlo
+## Nota
 
-```bash
-cd spainclouds_next_directory_public_v3
-npm install
-npm run dev
-```
+Esta versión funciona como demo persistiendo cambios en `localStorage` del navegador.
 
-Después abre:
 
-```bash
-http://localhost:3000
-```
-
-## Rutas incluidas
-
-- `/` → directorio principal
-- `/startup/[slug]` → ficha individual
-- `/proponer` → formulario de propuesta
-- `/admin` → backoffice demo
-
-## Ajustes aplicados en esta revisión
-
-- Se ha retirado el enlace público a LinkedIn en tarjetas y fichas.
-- Se ha eliminado la fase de startup del filtro del directorio.
-- Se han retirado fase y estado de la ficha pública.
-- Se han cargado las 150 startups disponibles en la hoja principal.
-- Se han generado logos placeholder para todas las startups que no tenían uno preparado.
-- Cuando una startup no tiene web válida para mostrar, el botón aparece como no disponible.
-
-## Notas
-
-- El formulario y el backoffice siguen siendo visuales; todavía no guardan en base de datos.
-- Algunos registros pueden requerir revisión manual adicional antes de una publicación definitiva.
+## Cambios v5
+- Contacto y reclamar empresa se fusionan en `/contacto`.
+- La navegación pública elimina el enlace independiente a reclamar empresa.
+- Las solicitudes unificadas siguen llegando a `/admin` y preparan un correo a `smartclouds@globaltech.tv`.
