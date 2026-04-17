@@ -5,6 +5,7 @@ export function middleware(request) {
 
   if (pathname.startsWith("/admin")) {
     const authCookie = request.cookies.get("spainclouds_admin_auth")?.value;
+
     if (authCookie !== "1") {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("next", pathname);
