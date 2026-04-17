@@ -14,13 +14,16 @@ function getSpecializations(item) {
 }
 
 function toggleValue(list, value) {
-  return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
+  return list.includes(value)
+    ? list.filter((item) => item !== value)
+    : [...list, value];
 }
 
 function optionCounts(startups, selectedSectors, selectedCommunities, query) {
   const textMatcher = (item) => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
+
     return [
       item.nombre_empresa,
       item.descripcion_corta,
@@ -38,30 +41,53 @@ function optionCounts(startups, selectedSectors, selectedCommunities, query) {
   };
 
   const sectorBase = startups.filter((item) => {
-    const communityMatch = !selectedCommunities.length || selectedCommunities.includes(item.comunidad_autonoma);
+    const communityMatch =
+      !selectedCommunities.length ||
+      selectedCommunities.includes(item.comunidad_autonoma);
+
     return textMatcher(item) && communityMatch;
   });
 
   const communityBase = startups.filter((item) => {
-    const sectorMatch = !selectedSectors.length || selectedSectors.includes(item.sector_principal);
+    const sectorMatch =
+      !selectedSectors.length ||
+      selectedSectors.includes(item.sector_principal);
+
     return textMatcher(item) && sectorMatch;
   });
 
   const specializationBase = startups.filter((item) => {
-    const sectorMatch = !selectedSectors.length || selectedSectors.includes(item.sector_principal);
-    const communityMatch = !selectedCommunities.length || selectedCommunities.includes(item.comunidad_autonoma);
+    const sectorMatch =
+      !selectedSectors.length ||
+      selectedSectors.includes(item.sector_principal);
+
+    const communityMatch =
+      !selectedCommunities.length ||
+      selectedCommunities.includes(item.comunidad_autonoma);
+
     return textMatcher(item) && sectorMatch && communityMatch;
   });
 
-  const sectors = [...new Set(startups.map((item) => item.sector_principal).filter(Boolean))]
+  const sectors = [
+    ...new Set(startups.map((item) => item.sector_principal).filter(Boolean)),
+  ]
     .sort((a, b) => a.localeCompare(b, "es"))
-    .map((label) => ({ label, count: sectorBase.filter((item) => item.sector_principal === label).length }));
+    .map((label) => ({
+      label,
+      count: sectorBase.filter((item) => item.sector_principal === label).length,
+    }));
 
-  const communities = [...new Set(startups.map((item) => item.comunidad_autonoma).filter(Boolean))]
+  const communities = [
+    ...new Set(startups.map((item) => item.comunidad_autonoma).filter(Boolean)),
+  ]
     .sort((a, b) => a.localeCompare(b, "es"))
-    .map((label) => ({ label, count: communityBase.filter((item) => item.comunidad_autonoma === label).length }));
+    .map((label) => ({
+      label,
+      count: communityBase.filter((item) => item.comunidad_autonoma === label).length,
+    }));
 
   const specializationMap = new Map();
+
   specializationBase.forEach((item) => {
     getSpecializations(item).forEach((entry) => {
       specializationMap.set(entry, (specializationMap.get(entry) || 0) + 1);
@@ -75,12 +101,22 @@ function optionCounts(startups, selectedSectors, selectedCommunities, query) {
   return { sectors, communities, specializations };
 }
 
-function FilterGroup({ title, options, selected, onToggle, defaultOpen = true }) {
+function FilterGroup({
+  title,
+  options,
+  selected,
+  onToggle,
+  defaultOpen = true,
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <div className="filterSection">
-      <button type="button" className="filterSectionToggle" onClick={() => setIsOpen((current) => !current)}>
+      <button
+        type="button"
+        className="filterSectionToggle"
+        onClick={() => setIsOpen((current) => !current)}
+      >
         <span>{title}</span>
         <span className="filterSectionToggleIcon">{isOpen ? "−" : "+"}</span>
       </button>
@@ -88,9 +124,16 @@ function FilterGroup({ title, options, selected, onToggle, defaultOpen = true })
       {isOpen ? (
         <div className="filterList compactFilterList">
           {options.map((option) => (
-            <label key={option.label} className="filterCheckRow compactFilterRow">
+            <label
+              key={option.label}
+              className="filterCheckRow compactFilterRow"
+            >
               <span className="filterCheckLeft compactFilterLeft">
-                <input type="checkbox" checked={selected.includes(option.label)} onChange={() => onToggle(option.label)} />
+                <input
+                  type="checkbox"
+                  checked={selected.includes(option.label)}
+                  onChange={() => onToggle(option.label)}
+                />
                 <span>{option.label}</span>
               </span>
               <span className="filterCount">{option.count}</span>
@@ -112,9 +155,11 @@ export default function DirectoryClient({ startups: baseStartups }) {
 
   useEffect(() => {
     const syncData = () => setStartups(getMergedStartups(baseStartups));
+
     syncData();
     window.addEventListener("storage", syncData);
     window.addEventListener("spainclouds-data-updated", syncData);
+
     return () => {
       window.removeEventListener("storage", syncData);
       window.removeEventListener("spainclouds-data-updated", syncData);
@@ -128,6 +173,7 @@ export default function DirectoryClient({ startups: baseStartups }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+
     return startups.filter((item) => {
       const textMatch =
         !q ||
@@ -146,14 +192,34 @@ export default function DirectoryClient({ startups: baseStartups }) {
           .toLowerCase()
           .includes(q);
 
-      const sectorMatch = !selectedSectors.length || selectedSectors.includes(item.sector_principal);
-      const communityMatch = !selectedCommunities.length || selectedCommunities.includes(item.comunidad_autonoma);
-      const itemSpecs = getSpecializations(item);
-      const specializationMatch = !selectedSpecializations.length || selectedSpecializations.every((entry) => itemSpecs.includes(entry));
+      const sectorMatch =
+        !selectedSectors.length ||
+        selectedSectors.includes(item.sector_principal);
 
-      return textMatch && sectorMatch && communityMatch && specializationMatch;
+      const communityMatch =
+        !selectedCommunities.length ||
+        selectedCommunities.includes(item.comunidad_autonoma);
+
+      const itemSpecs = getSpecializations(item);
+
+      const specializationMatch =
+        !selectedSpecializations.length ||
+        selectedSpecializations.every((entry) => itemSpecs.includes(entry));
+
+      return (
+        textMatch &&
+        sectorMatch &&
+        communityMatch &&
+        specializationMatch
+      );
     });
-  }, [startups, query, selectedSectors, selectedCommunities, selectedSpecializations]);
+  }, [
+    startups,
+    query,
+    selectedSectors,
+    selectedCommunities,
+    selectedSpecializations,
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -164,7 +230,15 @@ export default function DirectoryClient({ startups: baseStartups }) {
   const endIndex = startIndex + RESULTS_PER_PAGE;
   const visibleResults = filtered.slice(startIndex, endIndex);
 
-  const featured = startups.filter((item) => item.featured || item.sponsored).slice(0, 3);
+  const featured = startups
+    .filter((item) => item.featured || item.sponsored)
+    .slice(0, 3);
+
+  const hasActiveFilters =
+    Boolean(query) ||
+    selectedSectors.length > 0 ||
+    selectedCommunities.length > 0 ||
+    selectedSpecializations.length > 0;
 
   return (
     <div className="landscapeWrap">
@@ -183,7 +257,9 @@ export default function DirectoryClient({ startups: baseStartups }) {
           title="Sector"
           options={counts.sectors}
           selected={selectedSectors}
-          onToggle={(value) => setSelectedSectors((current) => toggleValue(current, value))}
+          onToggle={(value) =>
+            setSelectedSectors((current) => toggleValue(current, value))
+          }
           defaultOpen={true}
         />
 
@@ -191,7 +267,9 @@ export default function DirectoryClient({ startups: baseStartups }) {
           title="Comunidad autónoma"
           options={counts.communities}
           selected={selectedCommunities}
-          onToggle={(value) => setSelectedCommunities((current) => toggleValue(current, value))}
+          onToggle={(value) =>
+            setSelectedCommunities((current) => toggleValue(current, value))
+          }
           defaultOpen={true}
         />
 
@@ -199,23 +277,31 @@ export default function DirectoryClient({ startups: baseStartups }) {
           title="Especialización"
           options={counts.specializations}
           selected={selectedSpecializations}
-          onToggle={(value) => setSelectedSpecializations((current) => toggleValue(current, value))}
+          onToggle={(value) =>
+            setSelectedSpecializations((current) => toggleValue(current, value))
+          }
           defaultOpen={false}
         />
       </aside>
 
       <section className="landscapeResults">
-        {!query && !selectedSectors.length && !selectedCommunities.length && !selectedSpecializations.length && featured.length ? (
+        {!hasActiveFilters && featured.length ? (
           <>
             <div className="sectionTitle">
               <div>
                 <h2>Startups destacadas</h2>
-                <p className="smallMuted sectionLead">Una selección destacada del ecosistema.</p>
+                <p className="smallMuted sectionLead">
+                  Una selección destacada del ecosistema.
+                </p>
               </div>
             </div>
+
             <div className="grid">
               {featured.map((startup) => (
-                <StartupCard key={`featured-${startup.slug}`} startup={startup} />
+                <StartupCard
+                  key={`featured-${startup.slug}`}
+                  startup={startup}
+                />
               ))}
             </div>
           </>
@@ -224,9 +310,13 @@ export default function DirectoryClient({ startups: baseStartups }) {
         <div className="sectionTitle" style={{ marginTop: featured.length ? 26 : 0 }}>
           <div>
             <h2>Listado completo</h2>
-            <p className="smallMuted sectionLead">{filtered.length} coincidencias encontradas.</p>
+            <p className="smallMuted sectionLead">
+              {filtered.length} coincidencias encontradas.
+            </p>
           </div>
-          <div className="muted">Página {currentPage} de {totalPages}</div>
+          <div className="muted">
+            Página {currentPage} de {totalPages}
+          </div>
         </div>
 
         {filtered.length ? (
@@ -239,20 +329,51 @@ export default function DirectoryClient({ startups: baseStartups }) {
 
             {totalPages > 1 ? (
               <div className="pagination">
-                <button className="buttonGhost" type="button" onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))} disabled={currentPage === 1}>
-                  Anterior
-                </button>
-                <div className="smallMuted">
-                  Mostrando {startIndex + 1}-{Math.min(endIndex, filtered.length)} de {filtered.length}
+                <div className="paginationSide">
+                  {currentPage > 1 ? (
+                    <button
+                      className="buttonGhost"
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((page) => Math.max(page - 1, 1))
+                      }
+                    >
+                      Anterior
+                    </button>
+                  ) : (
+                    <span />
+                  )}
                 </div>
-                <button className="button" type="button" onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))} disabled={currentPage === totalPages}>
-                  Siguiente
-                </button>
+
+                <div className="smallMuted">
+                  Mostrando {startIndex + 1}-{Math.min(endIndex, filtered.length)} de{" "}
+                  {filtered.length}
+                </div>
+
+                <div className="paginationSide paginationSideRight">
+                  {currentPage < totalPages ? (
+                    <button
+                      className="button"
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((page) =>
+                          Math.min(page + 1, totalPages)
+                        )
+                      }
+                    >
+                      Siguiente
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                </div>
               </div>
             ) : null}
           </>
         ) : (
-          <div className="empty">No hay resultados con los filtros actuales. Prueba otra combinación.</div>
+          <div className="empty">
+            No hay resultados con los filtros actuales. Prueba otra combinación.
+          </div>
         )}
       </section>
     </div>
