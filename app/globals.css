@@ -588,10 +588,10 @@ code {
 
 .compactFilterRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 44px;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-radius: 14px;
   background: #fbfdff;
   border: 1px solid var(--line);
@@ -615,17 +615,18 @@ code {
   font-size: 0.92rem;
   line-height: 1.25;
   white-space: normal;
-  word-break: normal;
-  overflow-wrap: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
   hyphens: none;
 }
 
 .filterCount {
+  width: 44px;
+  text-align: right;
   color: var(--muted);
   font-weight: 700;
   font-size: 0.95rem;
   line-height: 1;
-  flex: 0 0 auto;
 }
 
 .pagination {
@@ -643,12 +644,6 @@ code {
 
 .paginationSideRight {
   justify-content: flex-end;
-}
-
-@media (min-width: 1180px) {
-  .compactFilterList {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 1100px) {

@@ -83,7 +83,9 @@ function optionCounts(startups, selectedSectors, selectedCommunities, query) {
     .sort((a, b) => a.localeCompare(b, "es"))
     .map((label) => ({
       label,
-      count: communityBase.filter((item) => item.comunidad_autonoma === label).length,
+      count: communityBase.filter(
+        (item) => item.comunidad_autonoma === label
+      ).length,
     }));
 
   const specializationMap = new Map();
@@ -307,7 +309,10 @@ export default function DirectoryClient({ startups: baseStartups }) {
           </>
         ) : null}
 
-        <div className="sectionTitle" style={{ marginTop: featured.length ? 26 : 0 }}>
+        <div
+          className="sectionTitle"
+          style={{ marginTop: featured.length ? 26 : 0 }}
+        >
           <div>
             <h2>Listado completo</h2>
             <p className="smallMuted sectionLead">
